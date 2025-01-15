@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Formation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .student-list, .group {
+            margin-bottom: 20px;
+        }
+        .student {
+            padding: 10px;
+            margin: 5px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .group {
+            border: 2px dashed #ccc;
+            padding: 10px;
+            border-radius: 8px;
+            min-height: 50px;
+        }
+        .group:hover {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Group Formation</h1>
+        <p>Drag students into groups to form your teams.</p>
+        
+        <div class="student-list" id="studentList">
+            <h2>Students</h2>
+            <!-- Students will be dynamically added here -->
+        </div>
+
+        <div class="group-area">
+            <h2>Groups</h2>
+            <div class="group" id="group1">Group 1</div>
+            <div class="group" id="group2">Group 2</div>
+            <div class="group" id="group3">Group 3</div>
+        </div>
+
+        <button id="submitGroups">Submit Groups</button>
+    </div>
+
+    <script>
+        const students = ['Alice', 'Bob', 'Charlie', 'Diana', 'Ethan', 'Fiona', 'George', 'Hannah'];
+        const studentList = document.getElementById('studentList');
+        const groups = document.querySelectorAll('.group');
+
+        // Initialize student list
+        students.forEach(student => {
+            const studentDiv = document.createElement('div');
+            studentDiv.className = 'student';
+            studentDiv.textContent = student;
+            studentDiv.draggable = true;
+
+            studentDiv.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('text', student);
+            });
+
+            studentList.appendChild(studentDiv);
+        });
+
+        // Allow groups to receive students
+        groups.forEach(group => {
+            group.addEventListener('dragover', e => {
+                e.preventDefault();
+            });
+
+            group.addEventListener('drop', e => {
+                e.preventDefault();
+                const studentName = e.dataTransfer.getData('text');
+
+                // Check if student is already added
+                if (![...group.children].some(child => child.textContent === studentName)) {
+                    const studentDiv = document.createElement('div');
+                    studentDiv.className = 'student';
+                    studentDiv.textContent = studentName;
+                    group.appendChild(studentDiv);
+                }
+            });
+        });
+
+        // Submit button functionality
+        document.getElementById('submitGroups').addEventListener('click', () => {
+            const groupData = {};
+            groups.forEach(group => {
+                const groupId = group.id;
+                const members = [...group.children].map(child => child.textContent);
+                groupData[groupId] = members;
+            });
+
+            console.log('Group Data:', groupData);
+            alert('Groups have been submitted! Check the console for details.');
+        });
+    </script>
+</body>
+</html>
