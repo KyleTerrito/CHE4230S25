@@ -25,13 +25,26 @@
 <body>
   <h1>Group Formation</h1>
   <div>
-    <input type="text" id="studentName" placeholder="Your Name" />
+    <label for="nameSelector">Select Name:</label>
+    <select id="nameSelector">
+      <option value="">Select a Name</option>
+      <option value="Alice">Alice</option>
+      <option value="Bob">Bob</option>
+      <option value="Charlie">Charlie</option>
+      <option value="David">David</option>
+      <option value="Eve">Eve</option>
+      <option value="Frank">Frank</option>
+      <option value="Grace">Grace</option>
+      <option value="Heidi">Heidi</option>
+      <option value="Ivan">Ivan</option>
+      <option value="Judy">Judy</option>
+    </select>
+
+    <label for="groupSelector">Select Group:</label>
     <select id="groupSelector">
       <option value="">Select a Group</option>
-      <option value="Group A">Group A</option>
-      <option value="Group B">Group B</option>
-      <option value="Group C">Group C</option>
     </select>
+
     <button onclick="joinGroup()">Join Group</button>
   </div>
   <h2>Groups</h2>
@@ -55,8 +68,28 @@
     const db = firebase.database();
 
     const groupsDiv = document.getElementById('groups');
+    const groupSelector = document.getElementById('groupSelector');
+    const nameSelector = document.getElementById('nameSelector');
 
-    // Render groups
+    // Generate groups dynamically based on the list of names
+    function generateGroups() {
+      const totalNames = nameSelector.options.length - 1; // Exclude the default "Select a Name" option
+      const numGroups = Math.ceil(totalNames / 3); // Divide names into groups of 3
+      const groupLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+      // Clear existing group options
+      groupSelector.innerHTML = '<option value="">Select a Group</option>';
+
+      for (let i = 0; i < numGroups; i++) {
+        const groupName = groupLetters[i];
+        const option = document.createElement('option');
+        option.value = groupName;
+        option.textContent = groupName;
+        groupSelector.appendChild(option);
+      }
+    }
+
+    // Render groups and their members
     function renderGroups() {
       const groupsRef = db.ref('groups');
       groupsRef.on('value', (snapshot) => {
@@ -74,11 +107,11 @@
 
     // Join group
     function joinGroup() {
-      const studentName = document.getElementById('studentName').value;
-      const groupName = document.getElementById('groupSelector').value;
+      const studentName = nameSelector.value;
+      const groupName = groupSelector.value;
 
-      if (!studentName.trim()) {
-        alert('Please enter your name');
+      if (!studentName) {
+        alert('Please select a name');
         return;
       }
       if (!groupName) {
@@ -104,7 +137,8 @@
       });
     }
 
-    // Initialize rendering
+    // Initialize
+    generateGroups();
     renderGroups();
   </script>
 </body>
